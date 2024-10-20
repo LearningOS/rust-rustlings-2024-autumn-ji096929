@@ -6,7 +6,7 @@
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
-use std::vec::*;
+use std::{clone, vec::*};
 
 #[derive(Debug)]
 struct Node<T> {
@@ -29,13 +29,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: Clone + PartialOrd> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T:PartialOrd+Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -69,15 +69,40 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+    pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self {
+        let mut merged_list = LinkedList::new();
+        let mut current_a = list_a.start;
+        let mut current_b = list_b.start;
+
+        while current_a.is_some() && current_b.is_some() {
+            let node_a = unsafe { current_a.unwrap().as_ref() };
+            let node_b = unsafe { current_b.unwrap().as_ref() };
+
+            if node_a.val <= node_b.val {
+                merged_list.add(node_a.val.clone());
+                current_a = node_a.next;
+            } else {
+                merged_list.add(node_b.val.clone());
+                current_b = node_b.next;
+            }
         }
-	}
+
+    // If there are remaining nodes in list_a
+    while current_a.is_some() {
+        let node_a = unsafe { current_a.unwrap().as_ref() };
+        merged_list.add(node_a.val);
+        current_a = node_a.next;
+    }
+
+    // If there are remaining nodes in list_b
+    while current_b.is_some() {
+        let node_b = unsafe { current_b.unwrap().as_ref() };
+        merged_list.add(node_b.val);
+        current_b = node_b.next;
+    }
+
+    merged_list
+}
 }
 
 impl<T> Display for LinkedList<T>
