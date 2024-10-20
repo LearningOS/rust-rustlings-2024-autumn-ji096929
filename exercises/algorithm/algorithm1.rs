@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -70,34 +70,34 @@ impl<T:PartialOrd+Clone> LinkedList<T> {
         }
     }
     pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self {
-        let mut merged_list = LinkedList::new();
-        let mut current_a = list_a.start;
-        let mut current_b = list_b.start;
+    let mut merged_list = LinkedList::new();
+    let mut current_a = list_a.start;
+    let mut current_b = list_b.start;
 
-        while current_a.is_some() && current_b.is_some() {
-            let node_a = unsafe { current_a.unwrap().as_ref() };
-            let node_b = unsafe { current_b.unwrap().as_ref() };
+    while current_a.is_some() && current_b.is_some() {
+        let node_a = unsafe { current_a.unwrap().as_ref() };
+        let node_b = unsafe { current_b.unwrap().as_ref() };
 
-            if node_a.val <= node_b.val {
-                merged_list.add(node_a.val.clone());
-                current_a = node_a.next;
-            } else {
-                merged_list.add(node_b.val.clone());
-                current_b = node_b.next;
-            }
+        if node_a.val <= node_b.val {
+            merged_list.add(node_a.val.clone());
+            current_a = node_a.next;
+        } else {
+            merged_list.add(node_b.val.clone());
+            current_b = node_b.next;
         }
+    }
 
     // If there are remaining nodes in list_a
     while current_a.is_some() {
         let node_a = unsafe { current_a.unwrap().as_ref() };
-        merged_list.add(node_a.val);
+        merged_list.add(node_a.val.clone());  // 使用 clone()
         current_a = node_a.next;
     }
 
     // If there are remaining nodes in list_b
     while current_b.is_some() {
         let node_b = unsafe { current_b.unwrap().as_ref() };
-        merged_list.add(node_b.val);
+        merged_list.add(node_b.val.clone());  // 使用 clone()
         current_b = node_b.next;
     }
 
